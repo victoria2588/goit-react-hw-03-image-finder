@@ -1,45 +1,52 @@
 import { Component } from 'react';
+import { BiSearchAlt } from 'react-icons/bi';
+
+import style from './SearchBar.module.css';
 
 export class SearchBar extends Component {
   state = {
     query: '',
   };
 
-  handleQueryChange = event => {
-    this.setState({ query: event.currentTarget.value.toLowerCase() });
+  onInputChange = ({ target: { value: query } }) => {
+    this.setState({ query });
   };
 
-  handleSubmit = event => {
-    event.preventDefault();
+  onBtnClick = e => {
+    const { query } = this.state;
 
-    if (this.state.query.trim() === '') {
-      return alert('Введите, что хотите найти из изображений!');
-    }
-    //2.И передаю в метод значение из этого файла state=searchName -> прокидываем пропс с App 'propName' и передаем ему значение с Searchbar -> searchImgName
-    this.props.onSubmit(this.state.query);
-    //5.Идет очистка формы поля input после ее сабмита
+    e.preventDefault();
+
+    if (query.trim() === '') return alert("You can't submit empty string");
+    this.props.handleImageQuery(query);
+
     this.setState({ query: '' });
   };
 
   render() {
     return (
-      <>
-        <header>
-          {/* // 1.при событии Submit формы -> вызываю метод из App -> handleSubmit -> this.props.propName */}
-          <form onSubmit={this.handleSubmit}>
-            <button type="submit">Submit</button>
-            <input
-              type="text"
-              name="query"
-              value={this.state.query}
-              onChange={this.handleQueryChange}
-              autoComplete="off"
-              autoFocus
-              placeholder="Search images and photos"
-            />
-          </form>
-        </header>
-      </>
+      <header className={style.searchbar}>
+        <form className={style.searchform}>
+          <button
+            onClick={this.onBtnClick}
+            type="submit"
+            className={style.searchform__button}
+          >
+            <BiSearchAlt fontSize={'32px'} />
+            <span className={style.searchform__button_label}>Search</span>
+          </button>
+
+          <input
+            onChange={this.onInputChange}
+            value={this.state.query}
+            className={style.searchform__input}
+            type="text"
+            autoComplete="off"
+            autoFocus
+            placeholder="Search images and photos"
+          />
+        </form>
+      </header>
     );
   }
 }

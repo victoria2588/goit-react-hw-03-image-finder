@@ -1,9 +1,11 @@
 import { ImageGalleryItem } from 'components/ImageGalleryItem/ImageGalleryItem';
 
+import style from './ImageGallery.module.css';
+
 export const ImageGallery = ({ data, onOpenModal }) => {
   return (
     <>
-      <ul>
+      <ul className={style.gallery}>
         {data.map(({ id, webformatURL, largeImageURL }) => {
           return (
             <ImageGalleryItem
