@@ -1,18 +1,9 @@
-import clsx from 'clsx';
-import style from './Button.module.css';
+import { PaginationaBtn } from './Button.styled';
 
-export const Button = ({ handleLoadMore, dataLength }) => {
-  let classes = '';
-  if (dataLength === 0 || dataLength < 12) {
-    classes += style.hidden;
-  }
+export const Pagination = ({ onClick, children }) => {
   return (
-    <button
-      className={clsx(style.loadmore, classes)}
-      type="button"
-      onClick={handleLoadMore}
-    >
-      Load more
-    </button>
+    <>
+      <PaginationaBtn onClick={onClick}>{children}</PaginationaBtn>
+    </>
   );
 };

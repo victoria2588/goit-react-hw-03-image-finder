@@ -1,4 +1,6 @@
-.searchbar {
+import styled from 'styled-components';
+
+export const Header = styled.header`
   top: 0;
   left: 0;
   position: sticky;
@@ -12,12 +14,12 @@
   padding-top: 12px;
   padding-bottom: 12px;
   color: #fff;
-  background-color: #b53f88;
+  background-color: #ff1493;
   box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2),
     0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
-}
+`;
 
-.searchform {
+export const SearchForm = styled.form`
   display: flex;
   align-items: center;
   width: 100%;
@@ -25,38 +27,29 @@
   background-color: #fff;
   border-radius: 3px;
   overflow: hidden;
-}
+`;
 
-.searchform__button {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
+export const SearchFormButton = styled.button`
+  display: inline-block;
   width: 48px;
   height: 48px;
   border: 0;
+  background: transparent;
   opacity: 0.6;
-  transition: opacity 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 250ms cubic-bezier(0.4, 0, 0.2, 1),
+    color 250ms cubic-bezier(0.4, 0, 0.2, 1),
+    transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
   outline: none;
-}
 
-.searchform__button:hover {
-  opacity: 1;
-}
+  &:hover {
+    opacity: 1;
+    color: blue;
+    transform: scale(1.05);
+  }
+`;
 
-.searchform__button_label {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  clip-path: inset(50%);
-  border: 0;
-}
-
-.searchform__input {
+export const SearchFormInput = styled.input`
   display: inline-block;
   width: 100%;
   font: inherit;
@@ -65,8 +58,9 @@
   outline: none;
   padding-left: 4px;
   padding-right: 4px;
-}
-.searchform__input::placeholder {
-  font: inherit;
-  font-size: 18px;
-}
+
+  &::placeholder {
+    font: inherit;
+    font-size: 18px;
+  }
+`;

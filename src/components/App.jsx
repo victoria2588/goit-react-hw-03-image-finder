@@ -1,97 +1,91 @@
-import { Helmet } from 'react-helmet';
-import { Component } from 'react';
-import { getImageByQuery } from 'api';
-
+import React, { Component } from 'react';
+import { Toaster } from 'react-hot-toast';
+import { fetchImages } from 'api';
 import { SearchBar } from './SearchBar/SearchBar';
-import { ImageGallery } from './ImageGallery/ImageGallery';
-import { Button } from './Button/Button';
-import { ImageNotFound } from './ImagesNotFound/ImagesNotFound';
+import { Gallery } from './ImageGallery/ImageGallery';
+import { Pagination } from './Button/Button';
+import { Wrapper } from './App.styled';
 import { Loader } from './Loader/Loader';
-import { Modal } from './Modal/Modal';
+import { notifyInfo, notifyInputQuerry } from './Notify/notify';
 
 export class App extends Component {
-  static perPage = 12;
   state = {
-    data: [],
     query: '',
+    images: [],
     page: 1,
-    isLoading: false,
-    isShowModal: false,
-    modalData: null,
+    loading: false,
   };
 
-  componentDidUpdate(prevProps, prevState) {
-    const { query, page } = this.state;
-    if (prevState.query !== query || prevState.page !== page) {
-      this.getImages({ q: this.state.query, per_page: App.perPage, page });
-    }
-    if (prevState.query !== query) {
-      this.handleImageQuery(query);
-      this.setState({ data: [], page: 1 });
-    }
-  }
+  changeQuery = newQuery => {
+    this.setState({
+      query: `${Date.now()}/${newQuery}`,
+      images: [],
+      page: 1,
+    });
+  };
 
-  getImages = async (params = {}) => {
+  componentDidUpdate = async (prevProps, prevState) => {
+    const prevQuery = prevState.query;
+    const searchQuery = this.state.query;
+    const prevPage = prevState.page;
+    const nexPage = this.state.page;
+
+    if (prevQuery !== searchQuery || prevPage !== nexPage) {
+      this.loadResult();
+    }
+  };
+
+  loadResult = async () => {
+    const searchQuery = this.state.query;
+    const nexPage = this.state.page;
+
     try {
-      this.setState({ isLoading: true });
-      const data = await getImageByQuery(params);
-      this.setState(prev => ({
-        data: prev.data ? [...prev.data, ...data] : [...data],
-      }));
+      this.setState({ loading: true });
+      const img = await fetchImages(searchQuery, nexPage);
+      if (img.length) {
+        this.setState(prevState => ({
+          images: this.state.page > 1 ? [...prevState.images, ...img] : img,
+        }));
+        this.setState({ loading: false });
+      } else {
+        notifyInfo();
+        this.setState({ loading: false });
+      }
     } catch (error) {
       console.log(error);
-    } finally {
-      this.setState({ isLoading: false });
+      this.setState({ loading: false });
     }
   };
 
-  handleImageQuery = query => {
-    this.setState({ query });
+  handleSubmit = evt => {
+    evt.preventDefault();
+    if (evt.target.elements.query.value.trim() === '') {
+      notifyInputQuerry();
+      return;
+    }
+    this.changeQuery(evt.target.elements.query.value);
+
+    evt.target.reset();
   };
 
   handleLoadMore = () => {
-    this.setState(prev => ({ page: prev.page + 1 }));
-  };
-
-  onOpenModal = e => {
-    const targetId = e.currentTarget.dataset.id;
-    this.showModal(targetId);
-  };
-
-  showModal = id => {
-    const { data } = this.state;
-    const modalData = data.find(item => item.id === Number(id));
-
-    this.setState(prev => ({ isShowModal: !prev.isShowModal, modalData }));
-  };
-
-  closeModal = () => {
-    this.setState({ isShowModal: false });
+    this.setState(prevState => ({
+      page: prevState.page + 1,
+    }));
   };
 
   render() {
-    const { data, query, isLoading, modalData } = this.state;
+    const { loading, images } = this.state;
     return (
-      <>
-        <Helmet>
-          <meta
-            http-equiv="Content-Security-Policy"
-            content="upgrade-insecure-requests"
-          />
-        </Helmet>
-        <SearchBar handleImageQuery={this.handleImageQuery} />
-        <ImageNotFound
-          query={query}
-          dataLength={data.length}
-          isLoading={isLoading}
-        />
-        <ImageGallery data={data} onOpenModal={this.onOpenModal} />
-        <Loader isLoading={isLoading} />
-        <Button handleLoadMore={this.handleLoadMore} dataLength={data.length} />
-        {this.state.isShowModal && (
-          <Modal data={modalData} onClose={this.closeModal} />
+      <Wrapper>
+        <SearchBar onSubmit={this.handleSubmit} />
+        {loading && <Loader />}
+        {images.length > 0 && <Gallery imgItems={images} />}
+        {images.length > 0 && (
+          <Pagination onClick={this.handleLoadMore}>Load More</Pagination>
         )}
-      </>
+        <Toaster position="top-right" reverseOrder={true} />
+      </Wrapper>
     );
   }
 }

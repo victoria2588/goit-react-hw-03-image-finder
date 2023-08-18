@@ -1,23 +1,16 @@
-import { ImageGalleryItem } from 'components/ImageGalleryItem/ImageGalleryItem';
+import { GalleryImage } from 'components/ImageGalleryItem/ImageGalleryItem';
+import { ImageGallery, ImageGalleryItem } from './ImageGallery.styled';
 
-import style from './ImageGallery.module.css';
-
-export const ImageGallery = ({ data, onOpenModal }) => {
+export const Gallery = ({ imgItems }) => {
   return (
-    <>
-      <ul className={style.gallery}>
-        {data.map(({ id, webformatURL, largeImageURL }) => {
-          return (
-            <ImageGalleryItem
-              onOpenModal={onOpenModal}
-              key={id}
-              id={id}
-              webformatURL={webformatURL}
-              largeImageURL={largeImageURL}
-            />
-          );
-        })}
-      </ul>
-    </>
+    <div>
+      <ImageGallery>
+        {imgItems.map(item => (
+          <ImageGalleryItem key={item.id}>
+            <GalleryImage item={item} />
+          </ImageGalleryItem>
+        ))}
+      </ImageGallery>
+    </div>
   );
 };
