@@ -43,11 +43,13 @@ export class App extends Component {
     try {
       this.setState({ loading: true });
       const { hits: img, totalHits } = await fetchImages(searchQuery, nexPage);
+
       if (img.length) {
         this.setState(prevState => ({
           images: this.state.page > 1 ? [...prevState.images, ...img] : img,
           totalImages: totalHits,
         }));
+
         this.setState({ loading: false });
       } else {
         notifyInfo();
@@ -83,7 +85,7 @@ export class App extends Component {
         <SearchBar onSubmit={this.handleSubmit} />
         {loading && <Loader />}
         {images.length > 0 && <Gallery imgItems={images} />}
-        {images.length > 0 && images.length < this.state.totalImages && (
+        {images.length > 0 && images.length < totalImages && (
           <Pagination onClick={this.handleLoadMore}>Load More</Pagination>
         )}
         <Toaster position="top-right" reverseOrder={true} />
