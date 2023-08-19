@@ -14,6 +14,7 @@ export class App extends Component {
     images: [],
     page: 1,
     loading: false,
+    totalImages: 0,
   };
 
   changeQuery = newQuery => {
@@ -41,10 +42,11 @@ export class App extends Component {
 
     try {
       this.setState({ loading: true });
-      const img = await fetchImages(searchQuery, nexPage);
+      const { hits: img, totalHits } = await fetchImages(searchQuery, nexPage);
       if (img.length) {
         this.setState(prevState => ({
           images: this.state.page > 1 ? [...prevState.images, ...img] : img,
+          totalImages: totalHits,
         }));
         this.setState({ loading: false });
       } else {
@@ -75,13 +77,13 @@ export class App extends Component {
   };
 
   render() {
-    const { loading, images } = this.state;
+    const { loading, images, totalImages } = this.state;
     return (
       <Wrapper>
         <SearchBar onSubmit={this.handleSubmit} />
         {loading && <Loader />}
         {images.length > 0 && <Gallery imgItems={images} />}
-        {images.length > 0 && (
+        {images.length > 0 && images.length < this.state.totalImages && (
           <Pagination onClick={this.handleLoadMore}>Load More</Pagination>
         )}
         <Toaster position="top-right" reverseOrder={true} />
